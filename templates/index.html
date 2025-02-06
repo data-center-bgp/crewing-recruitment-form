@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crew Application Form</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/file-upload.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
+      <h1 class="text-2xl font-bold mb-6">Crew Application Form</h1>
+
+      <form
+        hx-post="/submit"
+        hx-encoding="multipart/form-data"
+        hx-ext="file-upload"
+        class="space-y-6"
+      >
+        <!-- Personal Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nama</label>
+            <input
+              type="text"
+              name="nama"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">NIK</label>
+            <input
+              type="text"
+              name="nik"
+              required
+              pattern="\d{16}"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Jenis Kelamin</label
+            >
+            <select
+              name="jenis_kelamin"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            >
+              <option value="">Pilih Jenis Kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Domisili</label
+            >
+            <input
+              type="text"
+              name="domisili"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Usia</label>
+            <input
+              type="text"
+              name="usia"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Nomor HP</label
+            >
+            <input
+              type="number"
+              name="nomor_hp"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              name="email"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Agama</label>
+            <input
+              type="text"
+              name="agama"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Status Pernikahan</label
+            >
+            <input
+              type="text"
+              name="status_nikah"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Seafarer Code</label
+            >
+            <input
+              type="text"
+              name="seafarer_code"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Nomor Passport</label
+            >
+            <input
+              type="text"
+              name="nomor_passport"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Ijazah</label
+            >
+            <input
+              type="text"
+              name="ijazah"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Tahun Pengalaman Kerja</label
+            >
+            <input
+              type="text"
+              name="tahun_pengalaman_kerja"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Jabatan Terakhir</label
+            >
+            <input
+              type="text"
+              name="jabatan_terakhir"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Jenis Kapal</label
+            >
+            <input
+              type="text"
+              name="jenis_kapal"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Pengalaman di Migas</label
+            >
+            <input
+              type="text"
+              name="pengalaman_di_migas"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Upah Saat Ini</label
+            >
+            <input
+              type="text"
+              name="upah_saat_ini"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Ekspektasi Upah</label
+            >
+            <input
+              type="text"
+              name="ekspektasi_upah"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            />
+          </div>
+          <!-- File Upload Fields -->
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >CV (PDF/DOCX)</label
+            >
+            <input
+              type="file"
+              name="lampiran_cv"
+              required
+              accept=".pdf,.docx"
+              onchange="convertToBase64(this, 'cv-data')"
+              class="mt-1 block w-full"
+            />
+            <input type="hidden" name="lampiran_cv" id="cv-data" />
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Foto (JPG/PNG)</label
+            >
+            <input
+              type="file"
+              name="lampiran_foto"
+              required
+              accept=".jpg,.jpeg,.png"
+              onchange="convertToBase64(this, 'photo-data')"
+              class="mt-1 block w-full"
+            />
+            <input type="hidden" name="lampiran_foto" id="photo-data" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700"
+            >Sertifikat</label
+          >
+          <input
+            type="text"
+            name="sertifikat"
+            required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Submit Application
+          </button>
+        </div>
+
+        <!-- Response Message -->
+        <div id="response-message" class="mt-4"></div>
+      </form>
+    </div>
+
+    <script>
+      function convertToBase64(fileInput, targetId) {
+        const file = fileInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById(targetId).value = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      document.body.addEventListener("htmx:afterRequest", function (evt) {
+        const response = JSON.parse(evt.detail.xhr.response);
+        const messageDiv = document.getElementById("response-message");
+
+        messageDiv.textContent = response.message;
+        messageDiv.className = response.success
+          ? "mt-4 p-4 bg-green-100 text-green-700 rounded"
+          : "mt-4 p-4 bg-red-100 text-red-700 rounded";
+
+        if (response.success) {
+          document.querySelector("form").reset();
+        }
+      });
+    </script>
+  </body>
+</html>
