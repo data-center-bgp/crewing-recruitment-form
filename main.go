@@ -216,9 +216,19 @@ func main() {
 	// Initialize environment variables
 	initEnv()
 
-	// Initialize fetch province and city names API
-	http.HandleFunc("/api/provinces", handleProvinceNames)
-	http.HandleFunc("/api/cities", handleCityNames)
+	// Use ServeMux
+	mux := http.NewServeMux()
+
+	// API Routes
+	mux.HandleFunc("/api/provinces", handleProvinceNames)
+	mux.HandleFunc("/api/cities", handleCityNames)
+
+	// Web Routes
+	mux.HandleFunc("/", handleHome)
+	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseMultipartForm(10 << 20) // 10 MB max memory
+		handleSubmit(w, r)
+	})
 
 	// Initialize Google Sheets API
 	if err := initGoogleSheets(); err != nil {
@@ -238,8 +248,8 @@ func main() {
 		handleSubmit(w, r)
 	})
 
-	fmt.Println("Server started at localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server started at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
