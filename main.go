@@ -14,6 +14,7 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+	"time"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2/google"
@@ -383,30 +384,42 @@ func getFileExtension(mimeType string) string {
 	return extensions[0]
 }
 
-func handleProvinceNames(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
+var client = &http.Client{
+	Timeout: 10 * time.Second,
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return nil
+	},
+}
 
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return nil
-		},
-	}
-
-	req, err := http.NewRequest("GET", "https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json", nil)
+func fetchWithRedirect(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 	defer resp.Body.Close()
 
-	io.Copy(w, resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP error: %d %s", resp.StatusCode, resp.Status)
+	}
+
+	return io.ReadAll(resp.Body)
+}
+
+func handleProvinceNames(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	data, err := fetchWithRedirect("https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
 }
 
 func handleCityNames(w http.ResponseWriter, r *http.Request) {
@@ -419,27 +432,14 @@ func handleCityNames(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	client := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return nil
-		},
-	}
-
 	url := fmt.Sprintf("https://emsifa.github.io/api-wilayah-indonesia/api/regencies/%s.json", provinceID)
-	req, err := http.NewRequest("GET", url, nil)
+	data, err := fetchWithRedirect(url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	io.Copy(w, resp.Body)
+	w.Write(data)
 }
 
 func validateCrewForm(crewForm CrewForm) error {
