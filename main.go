@@ -414,7 +414,8 @@ func handleProvinceNames(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	data, err := fetchWithRedirect("https://emsifa.com/api-wilayah-indonesia/api/provinces.json")
+	data, err := fetchWithRedirect("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -431,8 +432,7 @@ func handleCityNames(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-
-	url := fmt.Sprintf("https://emsifa.com/api-wilayah-indonesia/api/regencies/%s.json", provinceID)
+	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/%s.json", provinceID)
 	data, err := fetchWithRedirect(url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
