@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"mime"
 	"net/http"
@@ -22,27 +23,27 @@ import (
 )
 
 type CrewForm struct {
-	Nama                 string `json:"nama"`
-	Nik                  string `json:"nik"`
-	JenisKelamin         string `json:"jenis_kelamin"`
-	Domisili             string `json:"domisili"`
-	Usia                 string `json:"usia"`
-	NomorHp              string `json:"nomor_hp"`
-	Email                string `json:"email"`
-	Agama                string `json:"agama"`
-	StatusNikah          string `json:"status_nikah"`
-	SeafarerCode         string `json:"seafarer_code"`
-	NomorPassport        string `json:"nomor_passport"`
-	Ijazah               string `json:"ijazah"`
-	TahunPengalamanKerja string `json:"tahun_pengalaman_kerja"`
-	JabatanTerakhir      string `json:"jabatan_terakhir"`
-	JenisKapal           string `json:"jenis_kapal"`
-	PengalamanDiMigas    string `json:"pengalaman_di_migas"`
-	UpahSaatIni          string `json:"upah_saat_ini"`
-	EkspektasiUpah       string `json:"ekspektasi_upah"`
-	LampiranCv           string `json:"lampiran_cv"`
-	LampiranFoto         string `json:"lampiran_foto"`
-	Sertifikat           string `json:"sertifikat"`
+	Nama                 string   `json:"nama"`
+	Nik                  string   `json:"nik"`
+	JenisKelamin         string   `json:"jenis_kelamin"`
+	Domisili             []string `json:"domisili"`
+	Usia                 string   `json:"usia"`
+	NomorHp              string   `json:"nomor_hp"`
+	Email                string   `json:"email"`
+	Agama                string   `json:"agama"`
+	StatusNikah          string   `json:"status_nikah"`
+	SeafarerCode         string   `json:"seafarer_code"`
+	NomorPassport        string   `json:"nomor_passport"`
+	Ijazah               string   `json:"ijazah"`
+	TahunPengalamanKerja string   `json:"tahun_pengalaman_kerja"`
+	JabatanTerakhir      string   `json:"jabatan_terakhir"`
+	JenisKapal           string   `json:"jenis_kapal"`
+	PengalamanDiMigas    string   `json:"pengalaman_di_migas"`
+	UpahSaatIni          string   `json:"upah_saat_ini"`
+	EkspektasiUpah       string   `json:"ekspektasi_upah"`
+	LampiranCv           string   `json:"lampiran_cv"`
+	LampiranFoto         string   `json:"lampiran_foto"`
+	Sertifikat           []string `json:"sertifikat"`
 }
 
 type Response struct {
@@ -175,7 +176,7 @@ func writeToSheet(crew CrewForm) error {
 		crew.Nama,
 		crew.Nik,
 		crew.JenisKelamin,
-		crew.Domisili,
+		strings.Join(crew.Domisili, ", "),
 		crew.Usia,
 		crew.NomorHp,
 		crew.Email,
@@ -192,7 +193,7 @@ func writeToSheet(crew CrewForm) error {
 		crew.EkspektasiUpah,
 		crew.LampiranCv,
 		crew.LampiranFoto,
-		crew.Sertifikat,
+		strings.Join(crew.Sertifikat, ", "),
 		fmt.Sprintf("=NOW()"), // Adds timestamp
 	}
 
@@ -213,6 +214,10 @@ func main() {
 
 	// Initialize environment variables
 	initEnv()
+
+	// Initialize fetch province and city names API
+	http.HandleFunc("/api/provinces", handleProvinceNames)
+	http.HandleFunc("/api/cities", handleCityNames)
 
 	// Initialize Google Sheets API
 	if err := initGoogleSheets(); err != nil {
@@ -252,7 +257,7 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 		Nama:                 r.FormValue("nama"),
 		Nik:                  r.FormValue("nik"),
 		JenisKelamin:         r.FormValue("jenis_kelamin"),
-		Domisili:             r.FormValue("domisili"),
+		Domisili:             r.Form["domisili[]"],
 		Usia:                 r.FormValue("usia"),
 		NomorHp:              r.FormValue("nomor_hp"),
 		Email:                r.FormValue("email"),
@@ -269,7 +274,7 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 		EkspektasiUpah:       r.FormValue("ekspektasi_upah"),
 		LampiranCv:           r.FormValue("lampiran_cv"),
 		LampiranFoto:         r.FormValue("lampiran_foto"),
-		Sertifikat:           r.FormValue("sertifikat"),
+		Sertifikat:           r.Form["sertifikat[]"],
 	}
 
 	// Process CV upload
@@ -378,6 +383,40 @@ func getFileExtension(mimeType string) string {
 	return extensions[0]
 }
 
+func handleProvinceNames(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	resp, err := http.Get("https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	io.Copy(w, resp.Body)
+}
+
+func handleCityNames(w http.ResponseWriter, r *http.Request) {
+	provinceID := r.URL.Query().Get("provinceId")
+	if provinceID == "" {
+		http.Error(w, "Province ID is required", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	resp, err := http.Get(fmt.Sprintf("https://emsifa.github.io/api-wilayah-indonesia/api/regencies/%s.json", provinceID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	io.Copy(w, resp.Body)
+}
+
 func validateCrewForm(crewForm CrewForm) error {
 	// Validasi nama, harus ada isinya
 	if crewForm.Nama == "" {
@@ -395,7 +434,7 @@ func validateCrewForm(crewForm CrewForm) error {
 	}
 
 	// Validasi domisili
-	if crewForm.Domisili == "" {
+	if len(crewForm.Domisili) == 0 {
 		return fmt.Errorf("domicile is required")
 	}
 
@@ -485,8 +524,8 @@ func validateCrewForm(crewForm CrewForm) error {
 	}
 
 	// Validasi sertifikat
-	if crewForm.Sertifikat == "" {
-		return fmt.Errorf("certificate is required")
+	if len(crewForm.Sertifikat) == 0 {
+		return fmt.Errorf("at least one certificate is required")
 	}
 
 	return nil
