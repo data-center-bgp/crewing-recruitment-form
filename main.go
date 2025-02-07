@@ -417,6 +417,7 @@ func handleProvinceNames(w http.ResponseWriter, r *http.Request) {
 	data, err := fetchWithRedirect("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
 
 	if err != nil {
+		fmt.Println("Error fetching provinces:", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -435,6 +436,7 @@ func handleCityNames(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/%s.json", provinceID)
 	data, err := fetchWithRedirect(url)
 	if err != nil {
+		fmt.Println("Error fetching regencies:", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
