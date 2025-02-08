@@ -34,7 +34,7 @@ type CrewForm struct {
 	Agama                string   `json:"agama"`
 	StatusNikah          string   `json:"status_nikah"`
 	SeafarerCode         string   `json:"seafarer_code"`
-	NomorPassport        string   `json:"nomor_passport"`
+	NomorPassport        string   `json:"nomor_passport,omitempty"`
 	Ijazah               string   `json:"ijazah"`
 	TahunPengalamanKerja string   `json:"tahun_pengalaman_kerja"`
 	JabatanTerakhir      string   `json:"jabatan_terakhir"`
@@ -219,7 +219,7 @@ func main() {
 	// Use ServeMux
 	mux := http.NewServeMux()
 
-	// API Routes
+	// Proxy API Routes
 	mux.HandleFunc("/api/provinces", handleProvinceNames)
 	mux.HandleFunc("/api/cities", handleCityNames)
 
@@ -510,11 +510,6 @@ func validateCrewForm(crewForm CrewForm) error {
 	// Validasi seafarer code
 	if crewForm.SeafarerCode == "" {
 		return fmt.Errorf("seafarer code is required")
-	}
-
-	// Validasi nomor passport
-	if crewForm.NomorPassport == "" {
-		return fmt.Errorf("passport number is required")
 	}
 
 	// Validasi ijazah
