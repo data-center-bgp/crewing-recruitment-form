@@ -518,9 +518,31 @@
         <div class="flex justify-end">
           <button
             type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            id="submit-button"
+            class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
           >
-            Kirim Lamaran
+            <span id="button-text">Kirim Lamaran</span>
+            <svg
+              id="loading-spinner"
+              class="animate-spin h-5 w-5 hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
           </button>
         </div>
 
@@ -645,7 +667,27 @@
         await fetchProvinces();
       });
 
+      document.addEventListener("htmx:beforeRequest", function (evt) {
+        // Disable button and show loading spinner
+        const button = document.getElementById("submit-button");
+        const buttonText = document.getElementById("button-text");
+        const spinner = document.getElementById("loading-spinner");
+
+        button.disabled = true;
+        buttonText.textContent = "Mengirim...";
+        spinner.classList.remove("hidden");
+      });
+
       document.body.addEventListener("htmx:afterRequest", function (evt) {
+        // Reset button state
+        const button = document.getElementById("submit-button");
+        const buttonText = document.getElementById("button-text");
+        const spinner = document.getElementById("loading-spinner");
+
+        button.disabled = false;
+        buttonText.textContent = "Kirim Lamaran";
+        spinner.classList.add("hidden");
+
         const response = JSON.parse(evt.detail.xhr.response);
         const messageDiv = document.getElementById("response-message");
 
