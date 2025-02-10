@@ -226,9 +226,13 @@ func main() {
 	// Web Routes
 	mux.HandleFunc("/", handleHome)
 	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseMultipartForm(10 << 20) // 10 MB max memory
+		r.ParseMultipartForm(10 << 20)
 		handleSubmit(w, r)
 	})
+
+	// Serve static files
+	fs := http.FileServer(http.Dir("static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Initialize Google Sheets API
 	if err := initGoogleSheets(); err != nil {
