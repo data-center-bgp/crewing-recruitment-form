@@ -133,10 +133,21 @@ document.body.addEventListener("htmx:afterRequest", function (evt) {
   const response = JSON.parse(evt.detail.xhr.response);
   const messageDiv = document.getElementById("response-message");
 
-  messageDiv.textContent = response.message;
-  messageDiv.className = response.success
-    ? "mt-4 p-4 bg-green-100 text-green-700 rounded"
-    : "mt-4 p-4 bg-red-100 text-red-700 rounded";
+  if (messageDiv) {
+    let customMessage = "";
+
+    if (response.success) {
+      customMessage = `<div class="p-4 bg-green-100 text-green-700 rounded">
+        🎉 Pendaftaran berhasil! Selamat, akun Anda sudah terdaftar.
+      </div>`;
+    } else {
+      customMessage = `<div class="p-4 bg-red-100 text-red-700 rounded">
+        ❌ Pendaftaran gagal: ${response.message}
+      </div>`;
+    }
+
+    messageDiv.innerHTML = customMessage;
+  }
 
   if (response.success) {
     document.querySelector("form").reset();
