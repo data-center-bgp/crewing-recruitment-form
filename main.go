@@ -231,7 +231,7 @@ func main() {
 	})
 
 	// Serve static files
-	fs := http.FileServer(http.Dir("static"))
+	fs := http.FileServer(http.Dir("/var/www/go-apps/crewing-recruitment-form/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Initialize Google Sheets API
