@@ -195,7 +195,7 @@ func writeToSheet(crew CrewForm) error {
 		crew.LampiranCv,
 		crew.LampiranFoto,
 		strings.Join(crew.Sertifikat, ", "),
-		fmt.Sprintf("=NOW()"), // Adds timestamp
+		time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	valueRange := &sheets.ValueRange{
