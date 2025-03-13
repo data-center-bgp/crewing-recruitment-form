@@ -173,7 +173,13 @@ func initializeHeaders() {
 
 // writeToSheet writes the form data to Google Sheets
 func writeToSheet(crew CrewForm) error {
-	currentTime := time.Now().Format("2006-01-02 15:04:05")
+
+	loc, err := time.LoadLocation("Asia/Singapore")
+	if err != nil {
+		loc = time.FixedZone("UTC+8", 8*60*60)
+	}
+
+	currentTime := time.Now().In(loc).Format("2006-01-02 15:04:05")
 
 	values := []interface{}{
 		crew.Nama,
@@ -204,7 +210,7 @@ func writeToSheet(crew CrewForm) error {
 		Values: [][]interface{}{values},
 	}
 
-	_, err := sheetsService.Spreadsheets.Values.Append(
+	_, err = sheetsService.Spreadsheets.Values.Append(
 		spreadsheetId,
 		"A1", // Starting cell reference
 		valueRange,
@@ -247,12 +253,6 @@ func main() {
 		log.Printf("Warning: Google Drive integration failed: %v", err)
 		log.Println("Continuing without Google Drive integration...")
 	}
-
-	http.HandleFunc("/", handleHome)
-	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseMultipartForm(10 << 20) // 10 MB max memory
-		handleSubmit(w, r)
-	})
 
 	fmt.Println("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
