@@ -173,6 +173,8 @@ func initializeHeaders() {
 
 // writeToSheet writes the form data to Google Sheets
 func writeToSheet(crew CrewForm) error {
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+
 	values := []interface{}{
 		crew.Nama,
 		crew.Nik,
@@ -195,7 +197,7 @@ func writeToSheet(crew CrewForm) error {
 		crew.LampiranCv,
 		crew.LampiranFoto,
 		strings.Join(crew.Sertifikat, ", "),
-		time.Now().Format("2006-01-02 15:04:05"),
+		"'" + currentTime,
 	}
 
 	valueRange := &sheets.ValueRange{
@@ -206,7 +208,7 @@ func writeToSheet(crew CrewForm) error {
 		spreadsheetId,
 		"A1", // Starting cell reference
 		valueRange,
-	).ValueInputOption("USER_ENTERED").InsertDataOption("INSERT_ROWS").Do()
+	).ValueInputOption("RAW").InsertDataOption("INSERT_ROWS").Do()
 
 	return err
 }
