@@ -203,7 +203,7 @@ func writeToSheet(crew CrewForm) error {
 		crew.LampiranCv,
 		crew.LampiranFoto,
 		strings.Join(crew.Sertifikat, ", "),
-		"'" + currentTime,
+		currentTime,
 	}
 
 	valueRange := &sheets.ValueRange{
@@ -214,7 +214,7 @@ func writeToSheet(crew CrewForm) error {
 		spreadsheetId,
 		"A1", // Starting cell reference
 		valueRange,
-	).ValueInputOption("RAW").InsertDataOption("INSERT_ROWS").Do()
+	).ValueInputOption("USER_ENTERED").InsertDataOption("INSERT_ROWS").Do()
 
 	return err
 }
